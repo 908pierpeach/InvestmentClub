@@ -1,0 +1,30 @@
+name: Refresh Prices
+
+on:
+  schedule:
+    # Weekdays only. GitHub cron is UTC.
+    - cron: "40 13 * * 1-5"
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run refresh
+        env:
+          DBURL: ${{ secrets.DBURL }}
+        run: |
+          python daily_refresh_prices.py
