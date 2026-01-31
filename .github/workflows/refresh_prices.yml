@@ -2,8 +2,8 @@ name: Refresh Prices
 
 on:
   schedule:
+    - cron: "10 0 * * *"
     # Weekdays only. GitHub cron is UTC.
-    - cron: "40 13 * * 1-5"
   workflow_dispatch:
 
 jobs:
