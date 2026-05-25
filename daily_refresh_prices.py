@@ -101,6 +101,9 @@ def fetch_prices_yf(ticker: str, start_date: dt.date, max_retries: int = 3) -> p
             if df is None or df.empty:
                 return pd.DataFrame()
 
+            if isinstance(df.columns, pd.MultiIndex):
+                df.columns = df.columns.droplevel(1)
+
             df = df.reset_index()
             df.rename(columns={"Date": "px_date"}, inplace=True)
 
