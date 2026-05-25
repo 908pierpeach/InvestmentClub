@@ -101,6 +101,8 @@ def fetch_prices_yf(ticker: str, start_date: dt.date, max_retries: int = 3) -> p
             if df is None or df.empty:
                 return pd.DataFrame()
 
+            print(f"DEBUG {ticker}: columns={df.columns.tolist()}, index.name={df.index.name}, type={type(df.columns)}")
+
             if isinstance(df.columns, pd.MultiIndex):
                 df.columns = df.columns.droplevel(1)
 
