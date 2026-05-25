@@ -101,15 +101,24 @@ def fetch_prices_yf(ticker: str, start_date: dt.date, max_retries: int = 3) -> p
             if df is None or df.empty:
                 return pd.DataFrame()
 
-            print(f"DEBUG {ticker}: columns={df.columns.tolist()}, index.name={df.index.name}, type={type(df.columns)}")
-
+            # Flatten MultiIndex columns (yfinance 0.2.x+)
             if isinstance(df.columns, pd.MultiIndex):
                 df.columns = df.columns.droplevel(1)
 
             df = df.reset_index()
-            df.rename(columns={"Date": "px_date"}, inplace=True)
 
-            # yfinance returns "Adj Close" with that exact spacing/case
+            # Find the date column — could be "Date", "index", or "Datetime"
+            date_col = None
+            for col in df.columns:
+                if col in ("Date", "Datetime", "index"):
+                    date_col = col
+                    break
+            if date_col is None:
+                # Fall back to first column
+                date_col = df.columns[0]
+
+            df = df.rename(columns={date_col: "px_date"})
+
             if "Adj Close" not in df.columns:
                 return pd.DataFrame()
 
